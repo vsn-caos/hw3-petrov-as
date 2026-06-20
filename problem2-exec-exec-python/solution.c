@@ -12,7 +12,9 @@ int main() {
     if (len > 0 && expr[len - 1] == '\n') {
         expr[len - 1] = '\0';
     }
-    execlp("python3", "python3", "-c", expr, NULL);
+    char cmd[4096];
+    snprintf(cmd, sizeof(cmd), "print(%s)", expr);
+    execlp("python3", "python3", "-c", cmd, NULL);
     perror("execlp python3");
     return 1;
 }
