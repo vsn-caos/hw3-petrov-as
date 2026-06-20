@@ -43,14 +43,10 @@ int main(int argc, char *argv[]) {
         return 0;
     }
     char *pos = data;
-    int first = 1;
     while ((pos = memmem(pos, size - (pos - data), needle, needle_len)) != NULL) {
-        if (!first) putchar(' ');
-        printf("%ld", pos - data);
-        first = 0;
-        pos += needle_len;   
+        printf("%ld\n", pos - data);  
+        pos += needle_len;
     }
-    putchar('\n');
     munmap(data, size);
     close(fd);
     return 0;
