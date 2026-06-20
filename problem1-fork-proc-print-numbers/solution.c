@@ -3,23 +3,37 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
-// Программе передается аргумент — целое число N > 0.
-// Необходимо создать N-1 дополнительных процессов таким образом,
-// чтобы у каждого процесса было не более одного дочернего процесса.
-// Каждый из процессов должен вывести ровно одно число так,
-// чтобы на выходе получилась строка: 1 2 3 4 ... N
-// Между числами — ровно один пробел, строка завершается символом '\n'.
+void print_chain(int num, int N) {
+    if (num > N) return;
+    if (num == N) {
+        printf("%d\n", num);
+        fflush(stdout);
+        return;
+    }
+    printf("%d ", num);
+    fflush(stdout);
+    pid_t pid = fork();
+    if (pid == -1) {
+        perror("fork");
+        exit(1);
+    } else if (pid == 0) {
+        print_chain(num + 1, N);
+        exit(0);
+    } else {
+        waitpid(pid, NULL, 0);
+    }
+}
 
 int main(int argc, char *argv[]) {
     if (argc != 2) {
-        fprintf(stderr, "Usage: %s <N>\n", argv[0]);
+        fprintf(stderr, "Usage: %s N\n", argv[0]);
         return 1;
     }
-
-    int n = atoi(argv[1]);
-
-    // TODO: создайте цепочку из N процессов (каждый не более чем с одним потомком).
-    //       Каждый процесс выводит одно число. Порядок вывода должен быть 1 2 3 ... N.
-
+    int N = atoi(argv[1]);
+    if (N <= 0) {
+        fprintf(stderr, "N must be > 0\n");
+        return 1;
+    }
+    print_chain(1, N);
     return 0;
 }
